@@ -9,6 +9,7 @@ function Login() {
     const handleSubmit = (e) => {
         e.preventDefault()
         console.log('user information:',{username,password})
+        navigate('/dashboard')
     }
 
     return(
@@ -49,7 +50,7 @@ function Login() {
                             登录
                     </button>
                 </form>
-                <Link to={'/dashboard'} className="text-blue-500 hover:underline">
+                <Link to={'/register'} className="text-blue-500 hover:underline">
                     还没有账号？去注册!
                 </Link>
             </div>

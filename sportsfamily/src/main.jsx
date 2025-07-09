@@ -7,6 +7,8 @@ import ReactDOM from 'react-dom'
 import {createBrowserRouter,RouterProvider,Navigate} from "react-router-dom";
 import Login from './user/login.jsx'
 import Register from "./user/register.jsx";
+import Dashboard from "./user/dashboard.jsx";
+import Navbar from "./components/navbar.jsx";
 
 const router = createBrowserRouter([
     {
@@ -16,11 +18,19 @@ const router = createBrowserRouter([
     {
         path: '/login',
         element: <Login />,
-    },
-    {
-        path:'/dashboard',
+    },{
+        path: '/register',
         element: <Register />,
+    },{
+        element:<Navbar />,
+        children:[
+            {
+                path:'/dashboard',
+                element: <Dashboard />,
+            }
+        ]
     }
+
 ])
 
 createRoot(document.getElementById('root')).render(
