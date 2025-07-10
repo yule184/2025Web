@@ -50,9 +50,11 @@ function Login() {
                             登录
                     </button>
                 </form>
-                <Link to={'/register'} className="text-blue-500 hover:underline">
-                    还没有账号？去注册!
-                </Link>
+                <div className="text-center">
+                    <Link to={'/register'} className="text-blue-500 hover:underline ">
+                        还没有账号？去注册!
+                    </Link>
+                </div>
             </div>
         </div>
     )
