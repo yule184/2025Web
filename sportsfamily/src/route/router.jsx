@@ -3,6 +3,7 @@ import Login from '../user/login.jsx'
 import Register from "../user/register.jsx";
 import Dashboard from "../user/dashboard.jsx";
 import MyNavbar from "../layouts/mainlayouts.jsx";
+import Activitylist from "../activity/activitylist.jsx";
 import React from "react";
 
 export const router = createBrowserRouter([
@@ -22,6 +23,10 @@ export const router = createBrowserRouter([
             {
                 path:'/dashboard',
                 element: <Dashboard />,
+            },
+            {
+                path:'/activity',
+                element: <Activitylist />,
             }
         ]
     }
