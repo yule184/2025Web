@@ -9,6 +9,7 @@ import Login from './user/login.jsx'
 import Register from "./user/register.jsx";
 import Dashboard from "./user/dashboard.jsx";
 import Navbar from "./components/navbar.jsx";
+import MyNavbar from "./layouts/mainlayouts.jsx";
 
 const router = createBrowserRouter([
     {
@@ -22,7 +23,7 @@ const router = createBrowserRouter([
         path: '/register',
         element: <Register />,
     },{
-        element:<Navbar />,
+        element:<MyNavbar />,
         children:[
             {
                 path:'/dashboard',
