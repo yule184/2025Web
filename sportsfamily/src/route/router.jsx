@@ -5,6 +5,8 @@ import Dashboard from "../user/dashboard.jsx";
 import MyNavbar from "../layouts/mainlayouts.jsx";
 import Activitylist from "../activity/activitylist.jsx";
 import React from "react";
+import Stadiumlist from "../stadium/stadiumlist.jsx";
+import StadiumDetail from "../stadium/stadiumdetail.jsx";
 
 export const router = createBrowserRouter([
     {
@@ -25,8 +27,16 @@ export const router = createBrowserRouter([
                 element: <Dashboard />,
             },
             {
-                path:'/activity',
+                path:'/activitylist',
                 element: <Activitylist />,
+            },
+            {
+                path:'/stadiumlist',
+                element: <Stadiumlist />,
+            },
+            {
+                path:'/stadium/:id',
+                element:<StadiumDetail />
             }
         ]
     }

@@ -13,11 +13,19 @@ function Navbar() {
 
                     <div className="text-2xl font-medium text-white dark:text-white">动友之家</div>
                     <Link
-                        to="/activity"
+                        to="/activitylist"
                         className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-gray-200 hover:border-gray-300"
                     >
                         活动广场
                     </Link>
+
+                    <Link
+                        to="/stadiumlist"
+                        className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-gray-200 hover:border-gray-300"
+                    >
+                        热门场馆
+                    </Link>
+
                     <Link
                         to="/dashboard"
                         className="ml-auto inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-gray-200 hover:border-gray-300"
