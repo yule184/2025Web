@@ -21,7 +21,7 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // TODO:完善后端注册逻辑
+
 
         console.log('user information:',{username,password,sex,tel,age,identity});
 

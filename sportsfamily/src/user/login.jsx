@@ -1,19 +1,40 @@
 import { useState } from 'react';
 import {useNavigate,Link} from 'react-router-dom'
+import toast from "react-hot-toast";
 
 function Login() {
     const [username,setUsername] = useState('')
     const [password,setPassword] = useState('')
     const navigate = useNavigate()
 
-    const handleSubmit = (e) => {
+    const handleSubmit =async (e) => {
         e.preventDefault()
         console.log('user information:',{username,password})
 
         // TODO:后端通信
+        const response = await fetch('http://127.0.0.1:7001/api/user/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username:username,
+                password:password
+            })
+        });
+        const result = await response.json();
+        console.log(result)
+        if(result.code===200){
+            toast.success('登陆成功')
+            localStorage.setItem('username',result.data.username)
+            localStorage.setItem('role',result.data.identity)
+            navigate('/dashboard')
+        }else{
+            toast.error(result.message)
+        }
 
 
-        navigate('/dashboard')
+        //navigate('/dashboard')
     }
 
     return(
