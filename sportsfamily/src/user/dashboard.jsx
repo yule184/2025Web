@@ -11,7 +11,6 @@ function Dashboard() {
         sex: "男",
         age: 28,
         tel: "13800138000",
-        // avatar: "https://randomuser.me/api/portraits/men/1.jpg" // 头像占位图
     });
 
     return (

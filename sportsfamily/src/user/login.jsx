@@ -9,6 +9,10 @@ function Login() {
     const handleSubmit = (e) => {
         e.preventDefault()
         console.log('user information:',{username,password})
+
+        // TODO:后端通信
+
+
         navigate('/dashboard')
     }
 

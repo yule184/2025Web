@@ -18,15 +18,51 @@ function Register() {
 
 
     // 注册触发函数
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // TODO:完善后端注册逻辑
 
         console.log('user information:',{username,password,sex,tel,age,identity});
-        toast.success('注册成功！');
 
-        navigate('/login');
+        try{
+            // 发起HTTP post请求
+            const response = await fetch('http://127.0.0.1:7001/api/user/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    name: name,
+                    age: age,
+                    identity: identity,
+                    sex:sex,
+                    tel:tel,
+                })
+            });
+
+            // 检查HTTP状态码
+            if (!response.ok) {
+                throw new Error(`HTTP错误! 状态: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if(result.code===200){
+                console.log('注册成功',result.data);
+                toast.success('注册成功');
+                navigate('/login');
+            }else{
+                console.log('注册失败',result.message);
+                toast.error(result.message);
+            }
+
+        }catch(e){
+            console.error('请求失败:', e);
+            alert('网络错误，请稍后重试');
+        }
+
     }
 
     return (
