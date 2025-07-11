@@ -1,5 +1,7 @@
 import {useState} from "react";
 import {Link} from "react-router-dom";
+import defaultAvatar from "../assets/image/default-avatar.png";
+
 
 function Dashboard() {
     // 模拟用户数据（实际开发中可能来自API或状态管理）
@@ -28,8 +30,16 @@ function Dashboard() {
                     </div>
 
                     <div className="px-6 py-5">
-                        <div className="flex items-center mb-6">
 
+                        {/* 修改后的头像区域 */}
+                        <div className="flex items-center mb-6 space-x-4">
+                            <div className="flex-shrink-0">
+                                <img
+                                    className="h-16 w-16 rounded-full object-cover border-2 border-gray-200"
+                                    src={defaultAvatar}
+                                    alt="用户头像"
+                                />
+                            </div>
                             <div>
                                 <h3 className="text-xl font-semibold text-gray-900">{user.name}</h3>
                                 <p className="text-gray-500">@{user.username}</p>

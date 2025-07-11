@@ -8,6 +8,7 @@ import React from "react";
 import Stadiumlist from "../stadium/stadiumlist.jsx";
 import StadiumDetail from "../stadium/stadiumdetail.jsx";
 import ActivityDetail from "../activity/activitydetail.jsx";
+import MyActivity from "../activity/myactivity.jsx";
 
 export const router = createBrowserRouter([
     {
@@ -41,6 +42,9 @@ export const router = createBrowserRouter([
             },{
                 path:'/activity/:id',
                 element: <ActivityDetail />
+            },{
+                path:'/myactivity',
+                element: <MyActivity />
             }
         ]
     }

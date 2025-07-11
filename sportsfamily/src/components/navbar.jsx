@@ -27,8 +27,15 @@ function Navbar() {
                     </Link>
 
                     <Link
-                        to="/dashboard"
+                        to="/myactivity"
                         className="ml-auto inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-gray-200 hover:border-gray-300"
+                    >
+                        我的活动
+                    </Link>
+
+                    <Link
+                        to="/dashboard"
+                        className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-gray-200 hover:border-gray-300"
                     >
                         个人中心
                     </Link>
