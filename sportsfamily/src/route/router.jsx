@@ -7,6 +7,7 @@ import Activitylist from "../activity/activitylist.jsx";
 import React from "react";
 import Stadiumlist from "../stadium/stadiumlist.jsx";
 import StadiumDetail from "../stadium/stadiumdetail.jsx";
+import ActivityDetail from "../activity/activitydetail.jsx";
 
 export const router = createBrowserRouter([
     {
@@ -37,6 +38,9 @@ export const router = createBrowserRouter([
             {
                 path:'/stadium/:id',
                 element:<StadiumDetail />
+            },{
+                path:'/activity/:id',
+                element: <ActivityDetail />
             }
         ]
     }
