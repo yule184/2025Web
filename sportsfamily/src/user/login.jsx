@@ -26,8 +26,9 @@ function Login() {
         console.log(result)
         if(result.code===200){
             toast.success('登陆成功')
-            localStorage.setItem('username',result.data.username)
-            localStorage.setItem('role',result.data.identity)
+            sessionStorage.setItem('username',result.data.userInfo.username)
+            sessionStorage.setItem('role',result.data.userInfo.identity)
+
             navigate('/dashboard')
         }else{
             toast.error(result.message)
