@@ -1,37 +1,7 @@
 import React from "react";
 import {Link} from "react-router-dom";
-
-// 假数据 - 场馆信息（去掉image字段）
-const stadiums = [
-    {
-        id: 1,
-        name: '篮球场',
-        pricePerHour: 100,
-        address: '体育馆A区',
-        rating: 4.5
-    },
-    {
-        id: 2,
-        name: '足球场',
-        pricePerHour: 150,
-        address: '体育馆B区',
-        rating: 4.2
-    },
-    {
-        id: 3,
-        name: '游泳馆',
-        pricePerHour: 80,
-        address: '体育馆C区',
-        rating: 4.7
-    },
-    {
-        id: 4,
-        name: '羽毛球场',
-        pricePerHour: 60,
-        address: '体育馆D区',
-        rating: 4.3
-    },
-];
+import {useState,useEffect} from "react";
+import toast from "react-hot-toast";
 
 // 定义一组漂亮的纯色背景
 const bgColors = [
@@ -68,46 +38,111 @@ const RatingStars = ({ rating }) => {
 
 
 function Stadiumlist(){
+
+    const [stadiums, setStadiums] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchStadiums = async () => {
+            try{
+                const response = await fetch(`http://127.0.0.1:7001/api/stadium/`);
+                if(!response.ok){
+                    throw new Error(`HTTP error!status:${response.status}`);
+                }
+                const result = await response.json();
+
+                if(result.code === 200){
+                    setStadiums(result.data);
+                }else{
+                    toast.error('获取场馆信息失败')
+                    throw new Error(result.message||'获取场馆数据失败');
+                }
+            }catch (e){
+                console.log(e);
+                setError(e.message);
+            }finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStadiums();
+    },[])
+
+    if(loading){
+        return (
+            <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 flex justify-center items-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">加载场馆数据中...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 flex justify-center items-center">
+                <div className="bg-white p-6 rounded-lg shadow-md max-w-md w-full text-center">
+                    <h2 className="text-xl font-semibold text-red-600 mb-4">加载失败</h2>
+                    <p className="text-gray-700 mb-4">{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                    >
+                        重新加载
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">体育场馆</h1>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {stadiums.map((stadium, index) => {
-                        // 循环使用背景色
-                        const bgColor = bgColors[index % bgColors.length];
-                        return (
-                            <Link
-                                to={`/stadium/${stadium.id}`}
-                                key={stadium.id}
-                                className="group"
-                            >
-                                <div className={`${bgColor} rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 h-full flex flex-col`}>
-                                    <div className="p-6 flex-grow">
-                                        <div className="flex justify-between items-start">
-                                            <h2 className="text-xl font-semibold text-gray-800 mb-2">{stadium.name}</h2>
-                                            <span className="font-medium text-indigo-600">¥{stadium.pricePerHour}/小时</span>
+                {stadiums.length === 0 ? (
+                    <div className="text-center py-12">
+                        <p className="text-gray-500">暂无场馆数据</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {stadiums.map((stadium, index) => {
+                            // 循环使用背景色
+                            const bgColor = bgColors[index % bgColors.length];
+                            return (
+                                <Link
+                                    to={`/stadium/${stadium.id}`}
+                                    key={stadium.id}
+                                    className="group"
+                                >
+                                    <div className={`${bgColor} rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 h-full flex flex-col`}>
+                                        <div className="p-6 flex-grow">
+                                            <div className="flex justify-between items-start">
+                                                <h2 className="text-xl font-semibold text-gray-800 mb-2">{stadium.name}</h2>
+                                                <span className="font-medium text-indigo-600">¥{stadium.pricePerHour}/小时</span>
+                                            </div>
+                                            <RatingStars rating={stadium.rating} />
                                         </div>
-                                        <RatingStars rating={stadium.rating} />
-                                    </div>
-                                    <div className="px-6 pb-4">
-                                        <div className="text-gray-600 text-sm">{stadium.address}</div>
-                                        <div className="mt-3 text-right">
-                      <span className="inline-block px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
-                        查看详情 →
-                      </span>
+                                        <div className="px-6 pb-4">
+                                            <div className="text-gray-600 text-sm">{stadium.address}</div>
+                                            <div className="mt-3 text-right">
+                                                <span className="inline-block px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
+                                                    查看详情 →
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </Link>
-                        );
-                    })}
-                </div>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </div>
-
-    )
+    );
 }
 
 export default Stadiumlist;
