@@ -20,7 +20,7 @@ function Dashboard() {
     const [error, setError] = useState(false);
     const username = sessionStorage.getItem('username');
     const role = sessionStorage.getItem('role');
-    console.log(username)
+    //console.log(username)
 
     useEffect(() => {
         const fetchUserData = async ()=>{

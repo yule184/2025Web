@@ -23,10 +23,10 @@ function Login() {
             })
         });
         const result = await response.json();
-        console.log(result)
+        // console.log(result)
         if(result.code===200){
-            toast.success('登陆成功')
-            console.log(result.data.userInfo)
+            toast.success('登录成功')
+            console.log('登录成功',result.data.userInfo)
             sessionStorage.setItem('username',result.data.userInfo.username)
             sessionStorage.setItem('role',result.data.userInfo.identity)
 
@@ -36,7 +36,6 @@ function Login() {
         }
 
 
-        //navigate('/dashboard')
     }
 
     return(

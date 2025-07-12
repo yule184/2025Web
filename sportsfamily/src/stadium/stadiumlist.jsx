@@ -50,7 +50,7 @@ function Stadiumlist(){
 
         // 检查用户角色
         const role = sessionStorage.getItem("role");
-        console.log(role)
+        //console.log(role)
         setIsAdmin(role === "ADMIN");
 
         const fetchStadiums = async () => {
@@ -76,6 +76,7 @@ function Stadiumlist(){
         };
 
         fetchStadiums();
+        
     },[])
 
     if(loading){
