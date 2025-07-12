@@ -1,40 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {useState} from "react";
 
 
-// 假数据 - 场馆信息（去掉image字段）
-const stadiums = [
-    {
-        id: 1,
-        name: '篮球场',
-        pricePerHour: 100,
-        address: '体育馆A区',
-        rating: 4.5
-    },
-    {
-        id: 2,
-        name: '足球场',
-        pricePerHour: 150,
-        address: '体育馆B区',
-        rating: 4.2
-    },
-    {
-        id: 3,
-        name: '游泳馆',
-        pricePerHour: 80,
-        address: '体育馆C区',
-        rating: 4.7
-    },
-    {
-        id: 4,
-        name: '羽毛球场',
-        pricePerHour: 60,
-        address: '体育馆D区',
-        rating: 4.3
-    },
-];
+
 
 // 背景色定义（与列表页一致）
 const bgColors = [
@@ -55,15 +25,50 @@ const initialComments = [
 
 function StadiumDetail() {
     const { id } = useParams();
-    const stadium = stadiums.find((stadium) => stadium.id === parseInt(id));
+    const [stadium,setStadium] = useState(null);
+
+    const [loading,setLoading] = useState(true);
+    const [error,setError] = useState(null);
+
+    useEffect(() => {
+        const fetchStadium = async () => {
+            try{
+                const response = await fetch(`http://127.0.0.1:7001/api/stadium/${id}`);
+                const result= await response.json();
+                if(!response.ok||result.code !== 200){
+                    throw new Error(result.message || '获取场馆数据失败');
+                }
+                setStadium(result.data);
+            }catch (e) {
+                setError(e.message);
+            }finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStadium();
+
+    },[id]);
+
+    //const stadium = stadiums.find((stadium) => stadium.id === parseInt(id));
 
     const [comments, setComments] = useState(initialComments);
     const [newComment, setNewComment] = useState('');
     const [newRating, setNewRating] = useState(3); // 默认3星
 
-    if(!stadium) {
-        toast.error('场馆不存在')
-        return <div className="text-center py-20">场馆不存在</div>
+    // 加载状态
+    if (loading) {
+        return <div className="text-center py-20">加载中...</div>;
+    }
+
+    // 错误状态
+    if (error) {
+        return <div className="text-center py-20">{error}</div>;
+    }
+
+    // 数据加载完成但为空
+    if (!stadium) {
+        return <div className="text-center py-20">场馆不存在</div>;
     }
 
     // 新增：处理评论提交
@@ -125,7 +130,7 @@ function StadiumDetail() {
                         <div className="mt-6">
                             <h2 className="text-xl font-semibold text-gray-800 mb-2">场馆介绍</h2>
                             <div className="space-y-4 text-gray-600">
-                                <p>• 场地面积：标准{stadium.name.includes('篮球') ? '篮球' : stadium.name.includes('羽毛') ? '羽毛球' : stadium.name.includes('游泳') ? '游泳' : '足球'}场地</p>
+                                <p>• 场地面积：标准场地</p>
                                 <p>• 开放时间：每日8:00-22:00</p>
                                 <p>• 配套设施：更衣室、淋浴间、休息区</p>
                                 <p>• 预约要求：需提前24小时预约</p>

@@ -76,7 +76,7 @@ function Stadiumlist(){
         };
 
         fetchStadiums();
-        
+
     },[])
 
     if(loading){
