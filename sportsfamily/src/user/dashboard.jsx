@@ -39,6 +39,7 @@ function Dashboard() {
                 const result = await response.json();
                 if(result.code === 200){
                     setUser(result.data);
+                    console.log('user:',result.data);
                 }else{
                     toast.error('获取用户信息失败')
                     throw new Error(result.message||'获取用户信息失败');

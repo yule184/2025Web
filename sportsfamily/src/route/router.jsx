@@ -9,6 +9,7 @@ import Stadiumlist from "../stadium/stadiumlist.jsx";
 import StadiumDetail from "../stadium/stadiumdetail.jsx";
 import ActivityDetail from "../activity/activitydetail.jsx";
 import MyActivity from "../activity/myactivity.jsx";
+import CreateStadium from "../stadium/createstadium.jsx";
 
 export const router = createBrowserRouter([
     {
@@ -35,6 +36,9 @@ export const router = createBrowserRouter([
             {
                 path:'/stadiumlist',
                 element: <Stadiumlist />,
+            },{
+                path:'/stadium/create',
+                element:<CreateStadium />,
             },
             {
                 path:'/stadium/:id',

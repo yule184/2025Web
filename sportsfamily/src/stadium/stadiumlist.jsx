@@ -43,7 +43,16 @@ function Stadiumlist(){
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const [isAdmin, setIsAdmin] = useState(false);
+
+
     useEffect(() => {
+
+        // 检查用户角色
+        const role = sessionStorage.getItem("role");
+        console.log(role)
+        setIsAdmin(role === "ADMIN");
+
         const fetchStadiums = async () => {
             try{
                 const response = await fetch(`http://127.0.0.1:7001/api/stadium/`);
@@ -101,7 +110,18 @@ function Stadiumlist(){
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">体育场馆</h1>
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900">热门场馆</h1>
+                    {isAdmin && (
+                        <Link
+                            to="/stadium/create"
+                            className="text-sm text-indigo-600 hover:text-indigo-800 hover:underline"
+                        >
+                            增加新的场馆
+                        </Link>
+                    )}
+                </div>
+
 
                 {stadiums.length === 0 ? (
                     <div className="text-center py-12">
