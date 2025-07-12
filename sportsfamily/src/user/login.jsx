@@ -29,6 +29,7 @@ function Login() {
             console.log('登录成功',result.data.userInfo)
             sessionStorage.setItem('username',result.data.userInfo.username)
             sessionStorage.setItem('role',result.data.userInfo.identity)
+            sessionStorage.setItem('userId',result.data.userInfo.id)
 
             navigate('/dashboard')
         }else{

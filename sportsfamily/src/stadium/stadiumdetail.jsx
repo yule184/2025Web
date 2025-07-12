@@ -17,11 +17,11 @@ const bgColors = [
 ];
 
 // 假评论数据
-const initialComments = [
-    { id: 1, username: '运动达人', content: '场地很棒，设施齐全！', rating: 5 },
-    { id: 2, username: '篮球爱好者', content: '地板弹性很好，推荐~', rating: 4 },
-    { id: 3, username: '新手小白', content: '第一次来，工作人员很耐心指导', rating: 3 }
-];
+// const initialComments = [
+//     { id: 1, username: '运动达人', content: '场地很棒，设施齐全！', rating: 5 },
+//     { id: 2, username: '篮球爱好者', content: '地板弹性很好，推荐~', rating: 4 },
+//     { id: 3, username: '新手小白', content: '第一次来，工作人员很耐心指导', rating: 3 }
+// ];
 
 function StadiumDetail() {
     const { id } = useParams();
@@ -30,15 +30,30 @@ function StadiumDetail() {
     const [loading,setLoading] = useState(true);
     const [error,setError] = useState(null);
 
+    // 修改评论相关状态
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
+    const [newRating, setNewRating] = useState(3);
+    const [commentLoading, setCommentLoading] = useState(false);
+
     useEffect(() => {
-        const fetchStadium = async () => {
+        const fetchStadiumData = async () => {
             try{
+                // 获取场馆数据
                 const response = await fetch(`http://127.0.0.1:7001/api/stadium/${id}`);
                 const result= await response.json();
                 if(!response.ok||result.code !== 200){
                     throw new Error(result.message || '获取场馆数据失败');
                 }
                 setStadium(result.data);
+                // 获取评论列表
+                const commentsRes = await fetch(`http://127.0.0.1:7001/api/stadiumcomment/byid?stadiumId=${id}`);
+                const commentsData = await commentsRes.json();
+                if(!commentsRes.ok||commentsData.code !== 200){
+                    throw new Error(commentsRes.message || '获取场馆评论失败');
+                }
+                setComments(commentsData.data);
+
             }catch (e) {
                 setError(e.message);
             }finally {
@@ -46,15 +61,15 @@ function StadiumDetail() {
             }
         };
 
-        fetchStadium();
+        fetchStadiumData();
+
+
+
 
     },[id]);
 
     //const stadium = stadiums.find((stadium) => stadium.id === parseInt(id));
 
-    const [comments, setComments] = useState(initialComments);
-    const [newComment, setNewComment] = useState('');
-    const [newRating, setNewRating] = useState(3); // 默认3星
 
     // 加载状态
     if (loading) {
@@ -63,7 +78,20 @@ function StadiumDetail() {
 
     // 错误状态
     if (error) {
-        return <div className="text-center py-20">{error}</div>;
+        return (
+            <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 flex justify-center items-center">
+                <div className="bg-white p-6 rounded-lg shadow-md max-w-md w-full text-center">
+                    <h2 className="text-xl font-semibold text-red-600 mb-4">加载失败</h2>
+                    <p className="text-gray-700 mb-4">{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                    >
+                        重新加载
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     // 数据加载完成但为空
@@ -72,25 +100,45 @@ function StadiumDetail() {
     }
 
     // 新增：处理评论提交
-    const handleSubmitComment = (e) => {
+    const handleSubmitComment =async (e) => {
         e.preventDefault();
         if (!newComment.trim()) {
             toast.error('评论内容不能为空');
             return;
         }
+        try{
+            setCommentLoading(true);
+            const userId = sessionStorage.getItem('userId');
+            if(!userId){
+                throw new Error('请先登录');
+            }
+            const response = await fetch('http://127.0.0.1:7001/api/stadiumcomment/',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    content:newComment,
+                    rating:newRating,
+                    stadiumId:parseInt(id),
+                    userId:parseInt(userId),
+                })
+            });
+            const result = await response.json();
+            if(!response.ok||result.code !== 200){
+                throw new Error(result.message||'评论提交失败');
+            }
 
-        const comment = {
-            id: Date.now(),
-            username: '当前用户', // 实际项目中替换为登录用户
-            content: newComment,
-            rating: newRating // 新增评分
+            setComments([...comments,result.data]);
+            setNewComment('');
+            setNewRating(3);
+            toast.success('评论提交成功');
+        }catch (e){
+            toast.error(e.message);
+        }finally {
+            setCommentLoading(false);
+        }
 
-        };
-
-        setComments([...comments, comment]);
-        setNewComment('');
-        setNewRating(3); // 重置评分
-        toast.success('评论发布成功');
     };
 
     return (
@@ -151,23 +199,29 @@ function StadiumDetail() {
             <div className="max-w-4xl mx-auto mt-8 bg-white rounded-xl shadow-md overflow-hidden p-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">
                     用户评价 ({comments.length})
-                    <span className="ml-2 text-sm font-normal text-gray-500">
-            平均评分: {(comments.reduce((a, c) => a + c.rating, 0) / comments.length).toFixed(1)}/5
-          </span>
+                    {comments.length > 0 && (
+                        <span className="ml-2 text-sm font-normal text-gray-500">
+            平均评分: {(
+                            comments.reduce((a, c) => a + c.rating, 0) / comments.length
+                        ).toFixed(1)}/5
+        </span>
+                    )}
                 </h2>
 
-                {/* 评论列表（新增评分显示） */}
+                {/* 评论列表部分 */}
                 <div className="space-y-6 mb-8">
                     {comments.map((comment) => (
                         <div key={comment.id} className="border-b border-gray-100 pb-4 last:border-0">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center">
                                     <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
-                    <span className="text-indigo-600 font-medium text-sm">
-                      {comment.username.charAt(0)}
-                    </span>
+                        <span className="text-indigo-600 font-medium text-sm">
+                            {comment.user?.username?.charAt(0) || 'U'}
+                        </span>
                                     </div>
-                                    <span className="font-medium text-gray-700">{comment.username}</span>
+                                    <span className="font-medium text-gray-700">
+                        {comment.user?.username || '匿名用户'}
+                    </span>
                                 </div>
                                 <div className="flex items-center">
                                     {[...Array(5)].map((_, i) => (
@@ -183,6 +237,7 @@ function StadiumDetail() {
                                 </div>
                             </div>
                             <p className="text-gray-600 pl-11">{comment.content}</p>
+
                         </div>
                     ))}
                 </div>
@@ -224,12 +279,17 @@ function StadiumDetail() {
                                 onChange={(e) => setNewComment(e.target.value)}
                             />
                         </div>
+
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                            disabled={commentLoading}
+                            className={`px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors ${
+                                commentLoading ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
                         >
-                            提交评论
+                            {commentLoading ? '提交中...' : '提交评论'}
                         </button>
+
                     </div>
                 </form>
             </div>
