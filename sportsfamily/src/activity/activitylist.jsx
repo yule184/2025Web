@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs'; // 用于日期格式化
-import ActivityCard from '../components/ActivityCard'; // 导入组件
+import ActivityCard from '../components/ActivityCard.jsx'; // 导入组件
 import {useState,useEffect} from "react";
 import toast from "react-hot-toast";
 
