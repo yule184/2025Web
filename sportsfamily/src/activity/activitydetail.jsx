@@ -3,49 +3,6 @@ import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import toast from "react-hot-toast";
 
-// 假数据 - 应与activitylist.jsx中的数据一致
-// const activities = [
-//     {
-//         id: 1,
-//         title: '周末篮球赛',
-//         stadium: '篮球场',
-//         startTime: '2023-06-10T14:00:00',
-//         durationHours: 2,
-//         currentParticipants: 3,
-//         maxParticipants: 10,
-//         status: 'recruiting'
-//     },
-//     {
-//         id: 2,
-//         title: '羽毛球友谊赛',
-//         stadium: '羽毛球场',
-//         startTime: '2023-06-11T10:00:00',
-//         durationHours: 1.5,
-//         currentParticipants: 5,
-//         maxParticipants: 8,
-//         status: 'recruiting'
-//     },
-//     {
-//         id: 3,
-//         title: '游泳训练营',
-//         stadium: '游泳馆',
-//         startTime: '2023-06-12T18:00:00',
-//         durationHours: 1,
-//         currentParticipants: 2,
-//         maxParticipants: 6,
-//         status: 'recruiting'
-//     },
-//     {
-//         id: 4,
-//         title: '足球联赛',
-//         stadium: '足球场',
-//         startTime: '2023-06-15T19:00:00',
-//         durationHours: 2,
-//         currentParticipants: 9,
-//         maxParticipants: 14,
-//         status: 'recruiting'
-//     },
-// ];
 
 const ActivityDetail = () => {
     const { id } = useParams();
