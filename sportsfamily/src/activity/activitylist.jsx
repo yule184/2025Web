@@ -1,10 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import dayjs from 'dayjs'; // 用于日期格式化
 import ActivityCard from '../components/activitycard.jsx'
 import {useState,useEffect} from "react";
 import toast from "react-hot-toast";
-
 
 
 function Activitylist(){
@@ -13,6 +12,8 @@ function Activitylist(){
     const [loading, setLoading] = useState(true);
     const [searchKeyword, setSearchKeyword] = useState('');
     const [isSearching, setIsSearching] = useState(false);
+
+    const navigate = useNavigate();
 
     // 获取活动列表（带搜索功能）
     const fetchActivities = async (keyword = '') => {
@@ -75,7 +76,7 @@ function Activitylist(){
                     <div className="mb-4">
                         <h1 className="text-2xl font-bold text-gray-900">活动广场</h1>
                         <button
-                            onClick={() => { /* 预留点击逻辑 */ }}
+                            onClick={() => { navigate('/activity/create') }}
                             className="text-sm text-gray-600 hover:text-blue-600 hover:underline mt-1"
                         >
                             发布活动
