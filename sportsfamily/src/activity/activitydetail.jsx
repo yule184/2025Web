@@ -10,6 +10,10 @@ const ActivityDetail = () => {
     const [activity, setActivity] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // 用户id
+    const userId = sessionStorage.getItem('userId'); // 获取当前用户ID
+    const [isJoining, setIsJoining] = useState(false);
+
     useEffect(() => {
         const fetchActivityData = async () => {
             try{
@@ -42,6 +46,45 @@ const ActivityDetail = () => {
     // 格式化日期和时间
     const formattedDate = dayjs(activity.startTime).format('YYYY年MM月DD日');
     const formattedTime = dayjs(activity.startTime).format('HH:mm');
+
+    // 检查当前用户是否已参加活动
+    const isParticipant = activity.participants?.some(p => p.id === parseInt(userId));
+
+    const handleJoinActivity = async () => {
+        if(!userId){
+            toast.error('获取用户失败');
+            return;
+        }
+        if(activity.status !=='recruiting'){
+            toast.error('该活动不在招募状态');
+            return;
+        }
+        setIsJoining(true);
+        try{
+            const response = await fetch(`http://127.0.0.1:7001/api/activity/join`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    activityId: activity.id,
+                    userId:parseInt(userId),
+                })
+            });
+            const result = await response.json();
+            if(!response.ok||result.code !== 200){
+                throw new Error(result.message||'参加活动失败');
+            }
+            toast.success(result.message);
+            const refreshResponse = await fetch(`http://127.0.0.1:7001/api/activity/${id}`);
+            const refreshResult = await refreshResponse.json();
+            setActivity(refreshResult.data);
+        }catch (e) {
+            toast.error(e.message);
+        }finally {
+            setIsJoining(false);
+        }
+    }
 
 
     return (
@@ -93,9 +136,21 @@ const ActivityDetail = () => {
                     </div>
 
                     <div className="mt-8 flex space-x-4">
-                        <button className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            参加活动
-                        </button>
+                        <button
+                        onClick={handleJoinActivity}
+                        disabled={isJoining || isParticipant || activity.status !== 'recruiting'}
+                        className={`flex-1 py-3 rounded-lg transition-colors ${
+                        isParticipant
+                            ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                            : activity.status !== 'recruiting'
+                                ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                        >
+                        {isJoining ? '处理中...' :
+                            isParticipant ? '已参加' :
+                                activity.status === 'recruiting' ? '参加活动' : '活动已结束'}
+                    </button>
                         <button className="flex-1 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                             联系组织者
                         </button>
