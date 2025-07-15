@@ -122,7 +122,7 @@ function MyActivity(){
                                                             : 'bg-gray-100 text-gray-800'
                                                     }`}
                                                 >
-                                                    {activity.status === 'recruiting' ? '招募中' : '已结束'}
+                                                    {activity.status === 'recruiting' ? '招募中' : '已完成'}
                                                 </p>
                                             </div>
                                         </div>

@@ -19,6 +19,9 @@ function CreateActivity(){
 
     const userId = sessionStorage.getItem('userId');
 
+    const [displayTime, setDisplayTime] = useState(''); // 新增显示用状态
+
+
 
     // 获取场馆列表
     useEffect(() => {
@@ -67,6 +70,15 @@ function CreateActivity(){
             ...prev,
             startTime: dateString
         }));
+
+        // 设置友好显示格式
+        if (dateString) {
+            const date = new Date(dateString);
+            const formatted = `${date.getFullYear()}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            setDisplayTime(formatted);
+        } else {
+            setDisplayTime('');
+        }
     };
 
     const validateForm = () => {
@@ -124,7 +136,7 @@ function CreateActivity(){
 
     return (
         <div className="max-w-2xl mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">创建新活动</h1>
+            <h1 className="text-2xl font-bold mb-6">发布新活动</h1>
 
             {loading ? (
                 <div className="text-center py-8">加载中...</div>
@@ -172,6 +184,7 @@ function CreateActivity(){
                         </label>
                         <input
                             type="datetime-local"
+                            placeholder="请选择日期和时间"
                             name="startTime"
                             value={formData.startTime}
                             onChange={(e) => handleDateTimeChange(e.target.value)}
