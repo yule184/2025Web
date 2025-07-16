@@ -2,13 +2,17 @@ import React, {useEffect, useState} from 'react';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import toast from "react-hot-toast";
+import {useNavigate} from "react-router-dom";
 
 
 const ActivityDetail = () => {
+
     const { id } = useParams();
     // const activity = activities.find(a => a.id === parseInt(id));
     const [activity, setActivity] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const navigate = useNavigate();
 
     // 用户id
     const userId = sessionStorage.getItem('userId'); // 获取当前用户ID
@@ -167,7 +171,13 @@ const ActivityDetail = () => {
                     <div className="flex justify-between items-start">
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900">{activity.name}</h1>
-                            <div className="mt-1 text-gray-600">{activity.stadium.name}</div>
+
+                            <button
+                                onClick={() => { navigate(`/stadium/${activity.stadium.id}`) }}
+                                className="text-sm text-gray-600 hover:text-blue-600 hover:underline mt-1"
+                            >
+                                活动场地：{activity.stadium.name}
+                            </button>
                         </div>
                         <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
               {activity.status === 'recruiting' ? '招募中' : '已结束'}
@@ -192,6 +202,10 @@ const ActivityDetail = () => {
                         <div className="bg-gray-50 p-4 rounded-lg">
                             <div className="text-sm text-gray-500">活动时长</div>
                             <div className="mt-1 font-medium">{activity.duration}小时</div>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <div className="text-sm text-gray-500">活动发布人</div>
+                            <div className="mt-1 font-medium">@{activity.creator.username}</div>
                         </div>
                         {/* 如果是已完成活动，添加支付信息卡片 */}
                         {activity.status === 'completed' && paymentPerPerson && (
@@ -243,7 +257,7 @@ const ActivityDetail = () => {
                                 activity.status === 'recruiting' ? '参加活动' : '活动已结束'}
                     </button>
                         <button className="flex-1 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                            联系组织者
+                            修改信息请联系管理员
                         </button>
                     </div>
                 </div>
