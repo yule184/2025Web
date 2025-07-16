@@ -210,13 +210,19 @@ const ActivityDetail = () => {
                     <div className="mt-8">
                         <h2 className="text-lg font-semibold text-gray-900 mb-2">活动详情</h2>
                         <div className="prose prose-sm text-gray-600">
-                            <p>这是一个{activity.stadium.name}的{activity.name}活动，欢迎各位爱好者参加！</p>
-                            <p>活动要求：</p>
-                            <ul>
-                                <li>请自备运动装备</li>
-                                <li>提前10分钟到场签到</li>
-                                <li>遵守场馆规定</li>
-                            </ul>
+                            {activity.description ? (
+                                <p>{activity.description}</p>
+                            ) : (
+                                <>
+                                    <p>这是一个{activity.stadium.name}的{activity.name}活动，欢迎各位爱好者参加！</p>
+                                    <p>活动要求：</p>
+                                    <ul>
+                                        <li>请自备运动装备</li>
+                                        <li>提前10分钟到场签到</li>
+                                        <li>遵守场馆规定</li>
+                                    </ul>
+                                </>
+                            )}
                         </div>
                     </div>
 
