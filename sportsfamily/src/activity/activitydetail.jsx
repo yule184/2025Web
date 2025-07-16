@@ -5,9 +5,11 @@ import toast from "react-hot-toast";
 import {useNavigate} from "react-router-dom";
 
 
+
 const ActivityDetail = () => {
 
     const { id } = useParams();
+    console.log(id);
     // const activity = activities.find(a => a.id === parseInt(id));
     const [activity, setActivity] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -16,6 +18,9 @@ const ActivityDetail = () => {
 
     // 用户id
     const userId = sessionStorage.getItem('userId'); // 获取当前用户ID
+    const userRole = sessionStorage.getItem('role');
+    const [isAdmin, setIsAdmin] = useState(userRole==='ADMIN');
+
     const [isJoining, setIsJoining] = useState(false);
 
     // 修改评论相关状态
@@ -24,6 +29,9 @@ const ActivityDetail = () => {
     const [newRating, setNewRating] = useState(3);
     const [commentLoading, setCommentLoading] = useState(false);
 
+
+    // 修改活动信息part
+    const [isEditing,setIsEditing] = useState(false);
 
 
     useEffect(() => {
@@ -54,6 +62,25 @@ const ActivityDetail = () => {
 
         fetchActivityData();
     },[id]);
+
+    // 当activity数据加载完成后更新表单状态
+    useEffect(() => {
+        if (activity) {
+            setEditForm({
+                name: activity.name || '',
+                description: activity.description || '',
+                duration: activity.duration || 1,
+                targetParticipants: activity.targetParticipants || 1
+            });
+        }
+    }, [activity]); // 当activity变化时更新
+
+    const [editForm,setEditForm] = useState({
+        name:activity?.name||'',
+        description:activity?.description||'',
+        duration:activity?.duration||1,
+        targetParticipants:activity?.targetParticipants||1,
+    });
 
     if(loading){
         return <div className="text-center py-20">加载中...</div>
@@ -164,6 +191,37 @@ const ActivityDetail = () => {
     const paymentPerPerson = calculatePaymentPerPerson();
 
 
+    // 处理修改活动信息提交
+    const handleUpdateActivity = async () => {
+        try{
+            console.log(editForm);
+            const response = await fetch('http://127.0.0.1:7001/api/activity/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    activityId:parseInt(id),
+                    ...editForm
+                })
+            });
+            const result = await response.json();
+            if(!response.ok||result.code !== 200){
+                throw new Error(result.message||'修改失败');
+            }
+            toast.success('修改成功');
+            setIsEditing(false);
+            // 刷新活动数据
+            const refreshRes = await fetch(`http://127.0.0.1:7001/api/activity/${id}`);
+            const refreshData = await refreshRes.json();
+            setActivity(refreshData.data);
+        }catch (e) {
+            console.log(e.message);
+            toast.error(e.message);
+        }
+    };
+
+
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
@@ -180,8 +238,19 @@ const ActivityDetail = () => {
                             </button>
                         </div>
                         <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-              {activity.status === 'recruiting' ? '招募中' : '已结束'}
-            </span>
+                             {activity.status === 'recruiting' ? '招募中' : '已结束'}
+                        </span>
+
+                        {/* 新增管理员按钮 */}
+                        {isAdmin && activity.status === 'recruiting' && (
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                className="bg-gray-800 text-white px-3 py-1 rounded-full text-sm hover:bg-gray-700 transition-colors"
+                            >
+                                修改活动
+                            </button>
+                        )}
+
                     </div>
 
                     <div className="mt-6 grid grid-cols-2 gap-4">
@@ -355,6 +424,78 @@ const ActivityDetail = () => {
                     </div>
                 </form>
             </div>
+
+
+
+
+            {isEditing && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg w-full max-w-md p-6">
+                        <h3 className="text-lg font-bold mb-4">修改活动信息</h3>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">活动名称</label>
+                                <input
+                                    type="text"
+                                    value={editForm.name}
+                                    onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                                    className="w-full px-3 py-2 border rounded"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">活动描述</label>
+                                <textarea
+                                    value={editForm.description}
+                                    onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                                    className="w-full px-3 py-2 border rounded"
+                                    rows={3}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">时长(小时)</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={editForm.duration}
+                                        onChange={(e) => setEditForm({...editForm, duration: parseInt(e.target.value) || 1})}
+                                        className="w-full px-3 py-2 border rounded"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">招募人数</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={editForm.targetParticipants}
+                                        onChange={(e) => setEditForm({...editForm, targetParticipants: parseInt(e.target.value) || 1})}
+                                        className="w-full px-3 py-2 border rounded"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-2 mt-6">
+                            <button
+                                onClick={() => setIsEditing(false)}
+                                className="px-4 py-2 border rounded"
+                            >
+                                取消
+                            </button>
+                            <button
+                                onClick={handleUpdateActivity}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                确认修改
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
 
 
