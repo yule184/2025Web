@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types'; // 用于类型检查
+import {useNavigate} from 'react-router-dom';
 
 const ActivityCard = ({
                           activity,
@@ -27,6 +28,8 @@ const ActivityCard = ({
     const progressPercent = Math.round(
         (currentParticipants / maxParticipants) * 100
     );
+
+    const navigate = useNavigate();
 
     // 不同样式的卡片
     const cardStyles = {
@@ -77,7 +80,10 @@ const ActivityCard = ({
                 <div className="px-5 pb-4">
                     <button
                         className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-                        onClick={(e) => e.preventDefault()}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            navigate(`/activity/${id}`);
+                        }}
                     >
                         {status === 'recruiting' ? '参加活动' : '查看详情'}
                     </button>
